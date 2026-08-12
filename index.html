@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kelime Destesi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#2B2118;
+    --bg:#FBF3DE;
+    --panel:#FFFFFF;
+    --panel-2:#F5E9C8;
+    --line:#2B2118;
+    --accent:#3DAE5D;
+    --accent-dark:#2C8746;
+    --gold:#F0A93B;
+    --gold-dark:#C2822A;
+    --red:#E14B4B;
+    --red-dark:#B5342F;
+    --teal:#1C9E86;
+    --muted:#7A6A50;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    min-height:100vh;
+    font-family:'Fredoka', sans-serif;
+    color:var(--ink);
+    display:flex;
+    justify-content:center;
+    padding:24px 16px 60px;
+  }
+  .app{
+    width:100%;
+    max-width:420px;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:22px;
+  }
+  .brand h1{
+    font-weight:700;
+    font-size:26px;
+    margin:0;
+    color:var(--ink);
+  }
+  .brand h1 span{color:var(--red-dark);}
+  .brand .tag{
+    font-weight:600;
+    font-size:11px;
+    color:var(--ink);
+    letter-spacing:0.04em;
+    background:var(--panel);
+    border:2.5px solid var(--line);
+    border-radius:20px;
+    padding:6px 12px;
+    text-transform:uppercase;
+  }
+  .screen{display:none;}
+  .screen.active{display:block; animation:fadein .35s ease;}
+  @keyframes fadein{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+  /* ---- Onboarding ---- */
+  .card-flat{
+    background:var(--panel);
+    border:3px solid var(--line);
+    border-radius:22px;
+    padding:24px 20px;
+    box-shadow:0 6px 0 var(--line);
+  }
+  .card-flat h2{
+    font-weight:700;
+    font-size:20px;
+    margin:0 0 6px;
+    color:var(--ink);
+  }
+  .card-flat p{
+    color:var(--muted);
+    font-weight:500;
+    font-size:14px;
+    line-height:1.5;
+    margin:0 0 20px;
+  }
+  .goal-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:8px;
+    margin-bottom:14px;
+  }
+  .goal-btn{
+    font-weight:700;
+    font-size:16px;
+    background:#fff;
+    border:2.5px solid var(--line);
+    color:var(--ink);
+    border-radius:12px;
+    padding:14px 0;
+    cursor:pointer;
+    box-shadow:0 4px 0 var(--line);
+    transition:all .1s ease;
+  }
+  .goal-btn:active{transform:translateY(3px); box-shadow:0 1px 0 var(--line);}
+  .goal-btn.selected{
+    background:var(--gold);
+    border-color:var(--line);
+    color:var(--ink);
+  }
+  .custom-row{
+    display:flex;
+    gap:8px;
+    align-items:center;
+    margin-bottom:22px;
+  }
+  .custom-row input{
+    width:70px;
+    font-family:'Fredoka', sans-serif;
+    font-weight:600;
+    font-size:15px;
+    background:#fff;
+    border:2.5px solid var(--line);
+    color:var(--ink);
+    border-radius:12px;
+    padding:10px;
+    text-align:center;
+  }
+  .custom-row label{font-size:13px; font-weight:500; color:var(--muted);}
+  .primary-btn{
+    width:100%;
+    background:var(--accent);
+    color:#fff;
+    border:3px solid var(--line);
+    border-radius:16px;
+    padding:15px;
+    font-family:'Fredoka', sans-serif;
+    font-weight:700;
+    font-size:16px;
+    cursor:pointer;
+    transition:transform .1s ease, box-shadow .1s ease;
+    box-shadow:0 5px 0 var(--accent-dark);
+  }
+  .primary-btn:active{transform:translateY(4px); box-shadow:0 1px 0 var(--accent-dark);}
+  .primary-btn:disabled{opacity:0.4; cursor:not-allowed;}
+  .ghost-btn{
+    width:100%;
+    background:#fff;
+    color:var(--ink);
+    border:2.5px solid var(--line);
+    border-radius:16px;
+    padding:14px;
+    font-family:'Fredoka', sans-serif;
+    font-weight:600;
+    font-size:14px;
+    cursor:pointer;
+    margin-top:10px;
+    box-shadow:0 4px 0 var(--line);
+    transition:transform .1s ease, box-shadow .1s ease;
+  }
+  .ghost-btn:active{transform:translateY(3px); box-shadow:0 1px 0 var(--line);}
+
+  /* ---- Home ---- */
+  .stat-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-bottom:16px;
+  }
+  .stat-box{
+    background:var(--panel);
+    border:3px solid var(--line);
+    border-radius:16px;
+    padding:16px;
+    box-shadow:0 4px 0 var(--line);
+  }
+  .stat-box .num{
+    font-size:26px;
+    font-weight:700;
+    color:var(--accent-dark);
+  }
+  .stat-box .lbl{
+    font-size:12px;
+    font-weight:500;
+    color:var(--muted);
+    margin-top:2px;
+  }
+  .home-action{
+    background:var(--panel);
+    border:3px solid var(--line);
+    border-radius:18px;
+    padding:20px;
+    margin-bottom:12px;
+    cursor:pointer;
+    transition:transform .1s ease, box-shadow .1s ease;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 5px 0 var(--line);
+  }
+  .home-action:active{transform:translateY(4px); box-shadow:0 1px 0 var(--line);}
+  .home-action.disabled{opacity:0.4; cursor:not-allowed;}
+  .home-action .txt h3{
+    font-weight:700;
+    font-size:17px;
+    margin:0 0 4px;
+    color:var(--ink);
+  }
+  .home-action .txt p{
+    font-size:12.5px;
+    font-weight:500;
+    color:var(--muted);
+    margin:0;
+  }
+  .home-action .arrow{
+    font-size:20px;
+    font-weight:700;
+    color:var(--accent-dark);
+  }
+  .settings-link{
+    text-align:center;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink);
+    margin-top:14px;
+    cursor:pointer;
+    text-decoration:underline;
+    text-underline-offset:3px;
+  }
+
+  /* ---- Quiz ---- */
+  .quiz-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:16px;
+    font-weight:700;
+    font-size:13px;
+    color:var(--ink);
+  }
+  .progress-track{
+    flex:1;
+    height:14px;
+    background:var(--panel);
+    border:2.5px solid var(--line);
+    border-radius:10px;
+    margin:0 12px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--gold);
+    border-radius:8px;
+    transition:width .3s ease;
+  }
+  .deck-wrap{
+    position:relative;
+    margin-bottom:22px;
+  }
+  .card{
+    position:relative;
+    background:#fff;
+    border:3px solid var(--line);
+    border-radius:22px;
+    padding:38px 24px;
+    text-align:center;
+    box-shadow:0 6px 0 var(--line);
+  }
+  .card .en-word{
+    font-weight:700;
+    font-size:34px;
+    color:var(--ink);
+    margin-top:10px;
+    word-break:break-word;
+  }
+  .card .hint{
+    font-weight:600;
+    font-size:11px;
+    color:var(--teal);
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+  }
+  .card.shake{animation:shake .4s ease;}
+  @keyframes shake{
+    0%,100%{transform:translateX(0);}
+    20%{transform:translateX(-8px);}
+    40%{transform:translateX(7px);}
+    60%{transform:translateX(-5px);}
+    80%{transform:translateX(3px);}
+  }
+  .card.pop{animation:pop .35s ease;}
+  @keyframes pop{
+    0%{transform:scale(1);}
+    50%{transform:scale(1.03);}
+    100%{transform:scale(1);}
+  }
+  .choices{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .choice-btn{
+    background:#fff;
+    border:2.5px solid var(--line);
+    color:var(--ink);
+    border-radius:14px;
+    padding:15px 16px;
+    text-align:left;
+    font-family:'Fredoka', sans-serif;
+    font-weight:600;
+    font-size:15.5px;
+    cursor:pointer;
+    transition:all .1s ease;
+    box-shadow:0 4px 0 var(--line);
+  }
+  .choice-btn:active{transform:translateY(3px); box-shadow:0 1px 0 var(--line);}
+  .choice-btn.correct{
+    background:#D8F3DE;
+    border-color:var(--accent-dark);
+    color:var(--accent-dark);
+    box-shadow:0 4px 0 var(--accent-dark);
+  }
+  .choice-btn.wrong{
+    background:#FBDCDC;
+    border-color:var(--red-dark);
+    color:var(--red-dark);
+    box-shadow:0 4px 0 var(--red-dark);
+  }
+  .choice-btn:disabled{cursor:default;}
+
+  /* ---- Summary ---- */
+  .summary-icon{
+    font-size:48px;
+    text-align:center;
+    margin-bottom:6px;
+  }
+  .summary-title{
+    font-weight:700;
+    font-size:22px;
+    text-align:center;
+    margin:0 0 6px;
+    color:var(--ink);
+  }
+  .summary-sub{
+    text-align:center;
+    color:var(--muted);
+    font-weight:500;
+    font-size:13.5px;
+    margin:0 0 22px;
+  }
+  .word-list{
+    max-height:220px;
+    overflow-y:auto;
+    margin-bottom:20px;
+  }
+  .word-row{
+    display:flex;
+    justify-content:space-between;
+    padding:10px 4px;
+    border-bottom:2px dashed var(--panel-2);
+    font-size:14px;
+  }
+  .word-row .en{font-weight:700; color:var(--ink);}
+  .word-row .tr{font-weight:500; color:var(--muted);}
+  .word-row .miss{
+    font-weight:600;
+    font-size:11px;
+    color:var(--red-dark);
+    margin-left:8px;
+  }
+  .back-link{
+    text-align:center;
+    font-size:12.5px;
+    color:var(--muted);
+    margin-top:14px;
+    cursor:pointer;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="brand">
+    <h1>Kelime <span>Destesi</span></h1>
+    <div class="tag" id="brandTag">İNGİLİZCE</div>
+  </div>
+
+  <!-- ONBOARDING -->
+  <div class="screen" id="screen-onboard">
+    <div class="card-flat">
+      <h2>Günde kaç kelime öğrenmek istersin?</h2>
+      <p>Bu senin günlük hedefin. İstediğin zaman ayarlardan değiştirebilir, hedefi tamamladıktan sonra da devam edebilirsin.</p>
+      <div class="goal-grid" id="goalGrid">
+        <button class="goal-btn" data-v="5">5</button>
+        <button class="goal-btn" data-v="10">10</button>
+        <button class="goal-btn" data-v="15">15</button>
+        <button class="goal-btn" data-v="20">20</button>
+      </div>
+      <div class="custom-row">
+        <label>veya özel:</label>
+        <input type="number" id="customGoal" min="1" max="100" placeholder="—">
+      </div>
+      <button class="primary-btn" id="startBtn" disabled>Başla</button>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div class="screen" id="screen-home">
+    <div class="stat-row">
+      <div class="stat-box">
+        <div class="num" id="statKnown">0</div>
+        <div class="lbl">öğrenilen kelime</div>
+      </div>
+      <div class="stat-box">
+        <div class="num" id="statToday">0</div>
+        <div class="lbl">bugünkü hedef</div>
+      </div>
+    </div>
+
+    <div class="home-action" id="actNew">
+      <div class="txt">
+        <h3>Bugünün Kelimeleri</h3>
+        <p id="actNewDesc">Yeni kelimelerle başla</p>
+      </div>
+      <div class="arrow">→</div>
+    </div>
+
+    <div class="home-action" id="actReview">
+      <div class="txt">
+        <h3>Tekrar</h3>
+        <p id="actReviewDesc">Öğrendiğin kelimeleri pekiştir</p>
+      </div>
+      <div class="arrow">→</div>
+    </div>
+
+    <div class="settings-link" id="openSettings">günlük hedefi değiştir</div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="screen" id="screen-quiz">
+    <div class="quiz-top">
+      <span id="quizModeLabel">YENİ</span>
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      <span id="quizCount">0/0</span>
+    </div>
+    <div class="deck-wrap">
+      <div class="deck-shadow2"></div>
+      <div class="deck-shadow"></div>
+      <div class="card" id="quizCard">
+        <div class="hint">bu kelimenin anlamı</div>
+        <div class="en-word" id="enWord">word</div>
+      </div>
+    </div>
+    <div class="choices" id="choicesWrap"></div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="screen" id="screen-summary">
+    <div class="card-flat">
+      <div class="summary-icon">✓</div>
+      <div class="summary-title" id="summaryTitle">Harika iş!</div>
+      <div class="summary-sub" id="summarySub"></div>
+      <div class="word-list" id="wordList"></div>
+      <button class="primary-btn" id="moreBtn">Daha fazla kelime öğren</button>
+      <button class="ghost-btn" id="homeBtn">Ana ekrana dön</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------------- WORD BANK ---------------- */
+const WORDS = [
+["achieve","başarmak","fiil"],["ability","yetenek","isim"],["accept","kabul etmek","fiil"],
+["advice","tavsiye","isim"],["afford","gücü yetmek","fiil"],["amazing","şaşırtıcı","sıfat"],
+["ancient","antik","sıfat"],["anxious","endişeli","sıfat"],["apologize","özür dilemek","fiil"],
+["appear","görünmek","fiil"],["approach","yaklaşım","isim"],["argue","tartışmak","fiil"],
+["arrive","varmak","fiil"],["ashamed","utanmış","sıfat"],["assume","varsaymak","fiil"],
+["avoid","kaçınmak","fiil"],["aware","farkında","sıfat"],["awful","berbat","sıfat"],
+["behavior","davranış","isim"],["belief","inanç","isim"],["belong","ait olmak","fiil"],
+["benefit","fayda","isim"],["bother","rahatsız etmek","fiil"],["brave","cesur","sıfat"],
+["breathe","nefes almak","fiil"],["bright","parlak","sıfat"],["broad","geniş","sıfat"],
+["calm","sakin","sıfat"],["capable","yetenekli","sıfat"],["career","kariyer","isim"],
+["careful","dikkatli","sıfat"],["cautious","temkinli","sıfat"],["challenge","zorluk","isim"],
+["chase","kovalamak","fiil"],["cheap","ucuz","sıfat"],["cheerful","neşeli","sıfat"],
+["choice","seçim","isim"],["clever","zeki","sıfat"],["comfort","rahatlık","isim"],
+["common","yaygın","sıfat"],["compare","karşılaştırmak","fiil"],["complain","şikayet etmek","fiil"],
+["complex","karmaşık","sıfat"],["confuse","kafa karıştırmak","fiil"],["consider","düşünmek","fiil"],
+["consist","oluşmak","fiil"],["contain","içermek","fiil"],["continue","devam etmek","fiil"],
+["convince","ikna etmek","fiil"],["courage","cesaret","isim"],["curious","meraklı","sıfat"],
+["damage","hasar","isim"],["danger","tehlike","isim"],["decide","karar vermek","fiil"],
+["decline","reddetmek","fiil"],["delay","gecikme","isim"],["deliver","teslim etmek","fiil"],
+["deny","inkar etmek","fiil"],["depend","bağlı olmak","fiil"],["describe","tanımlamak","fiil"],
+["deserve","hak etmek","fiil"],["despite","rağmen","edat"],["destroy","yok etmek","fiil"],
+["determine","belirlemek","fiil"],["develop","geliştirmek","fiil"],["differ","farklı olmak","fiil"],
+["disappoint","hayal kırıklığına uğratmak","fiil"],["discover","keşfetmek","fiil"],["disturb","rahatsız etmek","fiil"],
+["doubt","şüphe","isim"],["eager","istekli","sıfat"],["earn","kazanmak","fiil"],
+["effort","çaba","isim"],["embarrass","utandırmak","fiil"],["encourage","cesaretlendirmek","fiil"],
+["engage","meşgul etmek","fiil"],["enormous","muazzam","sıfat"],["ensure","sağlamak","fiil"],
+["entire","bütün","sıfat"],["envy","kıskançlık","isim"],["escape","kaçmak","fiil"],
+["essential","gerekli","sıfat"],["establish","kurmak","fiil"],["eventually","sonunda","zarf"],
+["evidence","kanıt","isim"],["exact","tam","sıfat"],["examine","incelemek","fiil"],
+["exhausted","bitkin","sıfat"],["exist","var olmak","fiil"],["expand","genişletmek","fiil"],
+["expect","beklemek","fiil"],["experience","deneyim","isim"],["explain","açıklamak","fiil"],
+["extreme","aşırı","sıfat"],["fail","başarısız olmak","fiil"],["fair","adil","sıfat"],
+["familiar","tanıdık","sıfat"],["fascinate","büyülemek","fiil"],["fault","hata","isim"],
+["favor","iyilik","isim"],["fear","korku","isim"],["fierce","şiddetli","sıfat"],
+["fluent","akıcı","sıfat"],["focus","odaklanmak","fiil"],["forgive","affetmek","fiil"],
+["fortunate","şanslı","sıfat"],["frequent","sık","sıfat"],["frighten","korkutmak","fiil"],
+["frustrated","hayal kırıklığına uğramış","sıfat"],["generous","cömert","sıfat"],["genuine","gerçek","sıfat"],
+["gentle","nazik","sıfat"],["genuine","hakiki","sıfat"],["glance","göz atmak","fiil"],
+["global","küresel","sıfat"],["goal","hedef","isim"],["grateful","minnettar","sıfat"],
+["guarantee","garanti etmek","fiil"],["guilty","suçlu","sıfat"],["habit","alışkanlık","isim"],
+["harsh","sert","sıfat"],["hesitate","tereddüt etmek","fiil"],["honest","dürüst","sıfat"],
+["hopeless","umutsuz","sıfat"],["huge","kocaman","sıfat"],["humble","alçakgönüllü","sıfat"],
+["identify","tanımlamak","fiil"],["ignore","görmezden gelmek","fiil"],["imagine","hayal etmek","fiil"],
+["immediate","ani","sıfat"],["impact","etki","isim"],["improve","geliştirmek","fiil"],
+["include","dahil etmek","fiil"],["increase","artırmak","fiil"],["independent","bağımsız","sıfat"],
+["influence","etki","isim"],["inform","bilgilendirmek","fiil"],["injure","yaralamak","fiil"],
+["insist","ısrar etmek","fiil"],["inspire","ilham vermek","fiil"],["instead","onun yerine","zarf"],
+["intend","niyet etmek","fiil"],["invest","yatırım yapmak","fiil"],["involve","dahil olmak","fiil"],
+["irritate","sinirlendirmek","fiil"],["jealous","kıskanç","sıfat"],["judge","yargılamak","fiil"],
+["justify","haklı çıkarmak","fiil"],["knowledge","bilgi","isim"],["lack","eksiklik","isim"],
+["lonely","yalnız","sıfat"],["loyal","sadık","sıfat"],["maintain","sürdürmek","fiil"],
+["manage","yönetmek","fiil"],["mature","olgun","sıfat"],["mention","bahsetmek","fiil"],
+["mercy","merhamet","isim"],["mislead","yanıltmak","fiil"],["modest","alçakgönüllü","sıfat"],
+["nervous","gergin","sıfat"],["notice","fark etmek","fiil"],["obvious","açık","sıfat"],
+["occur","meydana gelmek","fiil"],["offend","gücendirmek","fiil"],["opportunity","fırsat","isim"],
+["organize","düzenlemek","fiil"],["overcome","üstesinden gelmek","fiil"],["patience","sabır","isim"],
+["permit","izin vermek","fiil"],["persuade","ikna etmek","fiil"],["pleasant","hoş","sıfat"],
+["polite","kibar","sıfat"],["possess","sahip olmak","fiil"],["precise","kesin","sıfat"],
+["predict","tahmin etmek","fiil"],["prefer","tercih etmek","fiil"],["prevent","önlemek","fiil"],
+["proud","gururlu","sıfat"],["provide","sağlamak","fiil"],["purpose","amaç","isim"],
+["pursue","peşinden gitmek","fiil"],["rare","nadir","sıfat"],["reach","ulaşmak","fiil"],
+["realize","fark etmek","fiil"],["reasonable","makul","sıfat"],["recall","hatırlamak","fiil"],
+["recognize","tanımak","fiil"],["recommend","tavsiye etmek","fiil"],["reduce","azaltmak","fiil"],
+["reflect","yansıtmak","fiil"],["refuse","reddetmek","fiil"],["regret","pişman olmak","fiil"],
+["relax","rahatlamak","fiil"],["reliable","güvenilir","sıfat"],["relieve","rahatlatmak","fiil"],
+["reluctant","isteksiz","sıfat"],["remain","kalmak","fiil"],["remarkable","dikkate değer","sıfat"],
+["remind","hatırlatmak","fiil"],["reveal","ortaya çıkarmak","fiil"],["rough","pürüzlü","sıfat"],
+["rude","kaba","sıfat"],["satisfy","tatmin etmek","fiil"],["scarce","kıt","sıfat"],
+["severe","şiddetli","sıfat"],["shallow","sığ","sıfat"],["sincere","samimi","sıfat"],
+["skill","beceri","isim"],["solve","çözmek","fiil"],["sorrow","keder","isim"],
+["stubborn","inatçı","sıfat"],["succeed","başarmak","fiil"],["suffer","acı çekmek","fiil"],
+["suggest","önermek","fiil"],["suitable","uygun","sıfat"],["suspicious","şüpheli","sıfat"],
+["talent","yetenek","isim"],["tend","eğiliminde olmak","fiil"],["thorough","kapsamlı","sıfat"],
+["threat","tehdit","isim"],["tolerate","hoş görmek","fiil"],["tremble","titremek","fiil"],
+["typical","tipik","sıfat"],["unique","eşsiz","sıfat"],["upset","üzgün","sıfat"],
+["urgent","acil","sıfat"],["vague","belirsiz","sıfat"],["valuable","değerli","sıfat"],
+["vary","değişmek","fiil"],["vast","engin","sıfat"],["vivid","canlı","sıfat"],
+["wander","dolaşmak","fiil"],["weak","zayıf","sıfat"],["wealthy","zengin","sıfat"],
+["wisdom","bilgelik","isim"],["worth","değer","isim"]
+].map((w,i)=>({id:'w'+i, en:w[0], tr:w[1], cat:w[2]}));
+
+/* ---------------- STATE ---------------- */
+let state = null;
+let session = null; // active quiz session
+const STORE_KEY = 'vocab-app-state-v1';
+
+const hasArtifactStorage = (typeof window.storage !== 'undefined');
+
+async function loadState(){
+  try{
+    if(hasArtifactStorage){
+      const r = await window.storage.get(STORE_KEY, false);
+      if(r && r.value){ state = JSON.parse(r.value); return; }
+    } else {
+      const raw = localStorage.getItem(STORE_KEY);
+      if(raw){ state = JSON.parse(raw); return; }
+    }
+  }catch(e){}
+  state = { onboarded:false, dailyGoal:10, words:{} };
+}
+async function saveState(){
+  const payload = JSON.stringify(state);
+  if(!hasArtifactStorage){
+    try{ localStorage.setItem(STORE_KEY, payload); }catch(e){}
+    return;
+  }
+  for(let attempt=0; attempt<2; attempt++){
+    try{
+      await window.storage.set(STORE_KEY, payload, false);
+      return;
+    }catch(e){
+      if(attempt===0){ await new Promise(r=>setTimeout(r,300)); }
+      // ilerleme bu oturumda hafızada kalır; bir sonraki başarılı kayıtta senkron olur
+    }
+  }
+}
+
+function getWordState(id){
+  if(!state.words[id]) state.words[id] = { status:'new', wrongCount:0 };
+  return state.words[id];
+}
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+/* ---------------- ONBOARDING ---------------- */
+let chosenGoal = null;
+document.getElementById('goalGrid').addEventListener('click', e=>{
+  const btn = e.target.closest('.goal-btn');
+  if(!btn) return;
+  document.querySelectorAll('.goal-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  chosenGoal = parseInt(btn.dataset.v);
+  document.getElementById('customGoal').value = '';
+  document.getElementById('startBtn').disabled = false;
+});
+document.getElementById('customGoal').addEventListener('input', e=>{
+  document.querySelectorAll('.goal-btn').forEach(b=>b.classList.remove('selected'));
+  const v = parseInt(e.target.value);
+  if(v && v>0){ chosenGoal = v; document.getElementById('startBtn').disabled = false; }
+  else { chosenGoal = null; document.getElementById('startBtn').disabled = true; }
+});
+document.getElementById('startBtn').addEventListener('click', async ()=>{
+  state.dailyGoal = chosenGoal;
+  state.onboarded = true;
+  await saveState();
+  renderHome();
+  show('screen-home');
+});
+
+/* ---------------- HOME ---------------- */
+function renderHome(){
+  const known = Object.values(state.words).filter(w=>w.status==='known').length;
+  document.getElementById('statKnown').textContent = known;
+  document.getElementById('statToday').textContent = state.dailyGoal;
+
+  const newWords = WORDS.filter(w=>getWordState(w.id).status==='new');
+  const reviewWords = WORDS.filter(w=>getWordState(w.id).status==='known');
+
+  const actNew = document.getElementById('actNew');
+  if(newWords.length===0){
+    actNew.classList.add('disabled');
+    document.getElementById('actNewDesc').textContent = 'Tüm kelimeleri öğrendin!';
+  } else {
+    actNew.classList.remove('disabled');
+    const n = Math.min(state.dailyGoal, newWords.length);
+    document.getElementById('actNewDesc').textContent = n + ' yeni kelime seni bekliyor';
+  }
+
+  const actReview = document.getElementById('actReview');
+  if(reviewWords.length===0){
+    actReview.classList.add('disabled');
+    document.getElementById('actReviewDesc').textContent = 'Henüz öğrenilen kelime yok';
+  } else {
+    actReview.classList.remove('disabled');
+    document.getElementById('actReviewDesc').textContent = reviewWords.length + ' kelimeyi pekiştir';
+  }
+}
+
+document.getElementById('actNew').addEventListener('click', ()=>{
+  const newWords = WORDS.filter(w=>getWordState(w.id).status==='new');
+  if(newWords.length===0) return;
+  const n = Math.min(state.dailyGoal, newWords.length);
+  startSession(shuffle(newWords).slice(0,n), 'new');
+});
+document.getElementById('actReview').addEventListener('click', ()=>{
+  const reviewWords = WORDS.filter(w=>getWordState(w.id).status==='known');
+  if(reviewWords.length===0) return;
+  startSession(shuffle(reviewWords), 'review');
+});
+document.getElementById('openSettings').addEventListener('click', ()=>{
+  chosenGoal = state.dailyGoal;
+  document.getElementById('customGoal').value='';
+  document.querySelectorAll('.goal-btn').forEach(b=>{
+    b.classList.toggle('selected', parseInt(b.dataset.v)===chosenGoal);
+  });
+  document.getElementById('startBtn').disabled = false;
+  show('screen-onboard');
+});
+
+/* ---------------- QUIZ ---------------- */
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function startSession(words, mode){
+  session = {
+    mode,
+    total: words.length,
+    queue: words.slice(),
+    completedIds: [],
+    missed: {}, // id -> count of wrong attempts this session
+    answeredCorrectOnce: new Set()
+  };
+  document.getElementById('quizModeLabel').textContent = mode==='new' ? 'YENİ' : 'TEKRAR';
+  show('screen-quiz');
+  nextCard();
+}
+
+function nextCard(){
+  if(session.queue.length===0){
+    return finishSession();
+  }
+  const word = session.queue[0];
+  const total = session.total;
+  const done = session.completedIds.length;
+  document.getElementById('quizCount').textContent = done+'/'+total;
+  document.getElementById('progressFill').style.width = Math.round((done/total)*100)+'%';
+
+  document.getElementById('enWord').textContent = word.en;
+  const card = document.getElementById('quizCard');
+  card.classList.remove('shake','pop');
+
+  const distractors = shuffle(WORDS.filter(w=>w.id!==word.id && w.cat===word.cat));
+  let pool = distractors.length>=3 ? distractors : shuffle(WORDS.filter(w=>w.id!==word.id));
+  const wrongs = pool.slice(0,3).map(w=>w.tr);
+  const choices = shuffle([word.tr, ...wrongs]);
+
+  const wrap = document.getElementById('choicesWrap');
+  wrap.innerHTML='';
+  choices.forEach(choiceTr=>{
+    const b = document.createElement('button');
+    b.className='choice-btn';
+    b.textContent = choiceTr;
+    b.addEventListener('click', ()=>handleAnswer(word, choiceTr, b));
+    wrap.appendChild(b);
+  });
+}
+
+function handleAnswer(word, choiceTr, btnEl){
+  const buttons = Array.from(document.querySelectorAll('.choice-btn'));
+  buttons.forEach(b=>b.disabled=true);
+  const card = document.getElementById('quizCard');
+
+  if(choiceTr === word.tr){
+    btnEl.classList.add('correct');
+    card.classList.add('pop');
+    session.answeredCorrectOnce.add(word.id);
+    setTimeout(()=>{
+      session.queue.shift();
+      session.completedIds.push(word.id);
+      const ws = getWordState(word.id);
+      if(session.mode==='new'){ ws.status='known'; }
+      // review mode: already known, stays known
+      saveState();
+      nextCard();
+    }, 500);
+  } else {
+    btnEl.classList.add('wrong');
+    buttons.find(b=>b.textContent===word.tr).classList.add('correct');
+    card.classList.add('shake');
+    session.missed[word.id] = (session.missed[word.id]||0)+1;
+    const ws = getWordState(word.id);
+    ws.wrongCount = (ws.wrongCount||0)+1;
+    setTimeout(()=>{
+      // move this word to the end of the queue, loop until correct
+      const w = session.queue.shift();
+      session.queue.push(w);
+      saveState();
+      nextCard();
+    }, 900);
+  }
+}
+
+function finishSession(){
+  const missedCount = Object.keys(session.missed).length;
+  document.getElementById('summaryTitle').textContent =
+    session.mode==='new' ? 'Bugünkü kelimeler tamam!' : 'Tekrar tamamlandı!';
+  document.getElementById('summarySub').textContent =
+    session.completedIds.length + ' kelime · ' +
+    (missedCount>0 ? missedCount + ' tanesinde biraz zorlandın' : 'hiç hata yapmadan bitirdin');
+
+  const list = document.getElementById('wordList');
+  list.innerHTML='';
+  session.completedIds.forEach(id=>{
+    const w = WORDS.find(x=>x.id===id);
+    const row = document.createElement('div');
+    row.className='word-row';
+    const missTxt = session.missed[id] ? ('<span class="miss">'+session.missed[id]+' yanlış</span>') : '';
+    row.innerHTML = '<span class="en">'+w.en+'</span><span class="tr">'+w.tr+missTxt+'</span>';
+    list.appendChild(row);
+  });
+
+  const moreBtn = document.getElementById('moreBtn');
+  const remainingNew = WORDS.filter(w=>getWordState(w.id).status==='new').length;
+  moreBtn.style.display = (session.mode==='new' && remainingNew>0) ? 'block' : 'none';
+
+  renderHome();
+  show('screen-summary');
+}
+
+document.getElementById('moreBtn').addEventListener('click', ()=>{
+  const newWords = shuffle(WORDS.filter(w=>getWordState(w.id).status==='new')).slice(0, state.dailyGoal);
+  if(newWords.length>0) startSession(newWords, 'new');
+});
+document.getElementById('homeBtn').addEventListener('click', ()=>{
+  renderHome();
+  show('screen-home');
+});
+
+/* ---------------- INIT ---------------- */
+(async function init(){
+  await loadState();
+  if(state.onboarded){
+    renderHome();
+    show('screen-home');
+  } else {
+    show('screen-onboard');
+  }
+})();
+</script>
+</body>
+</html>
